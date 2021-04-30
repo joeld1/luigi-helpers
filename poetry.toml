@@ -1,0 +1,4 @@
+[virtualenvs]
+path = "/opt/homebrew/anaconda3/envs/luigi_helpers"
+create = false
+in-project = false
