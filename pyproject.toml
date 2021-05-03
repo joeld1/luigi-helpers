@@ -6,6 +6,10 @@ authors = ["JD <10216562+joeld1@users.noreply.github.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
+luigi = "^3.0.3"
+flatten-dict = "^0.3.0"
+nested-lookup = "^0.2.22"
+docker = "^5.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
