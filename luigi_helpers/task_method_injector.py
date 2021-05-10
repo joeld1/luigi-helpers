@@ -89,6 +89,7 @@ class TaskMethodInjector(object):
 
             @functools.wraps(prev_method)
             def temp_wrapped_method(*args2, **kwargs2):
+                # TODO: Refactor this
                 current_method_name = method_name
                 current_attr_path = attr_path_to_method
                 params_to_update = get_unfrozen_dicts(method_injections_frzn)
@@ -98,7 +99,10 @@ class TaskMethodInjector(object):
 
                 unflatten_params = get_unfrozen_dicts(unflatten_params_frzn)[0]
                 unflatten_params = {k: v for k, v in unflatten_params.items() if not (v is None)}
-
+                skip_args = False
+                skip_kwargs = False
+                return_value = ""
+                returns_value = False
                 for p in params_to_update:
                     name = p.get("name")
                     new_val = p.get("value")
@@ -106,6 +110,18 @@ class TaskMethodInjector(object):
                     injection_type = p.get("injection_type")
                     param_location = p.get("param_location")
 
+                    if (injection_type == "replace_args") and (name == "args"):
+                        if new_val == "pass":
+                            skip_args = True
+                            continue
+                    elif (injection_type == "replace_kwargs") and (name == "kwargs"):
+                        if new_val == "pass":
+                            skip_kwargs = True
+                            continue
+                    if (skip_args and skip_kwargs) and (name == "returns") and (injection_type == "replace") and (param_location == "return"):
+                        return_value = new_val
+                        returns_value = True
+                        continue
                     if not is_flattened_key:
                         print("Skipping indexing nested dicts")
                         if injection_type == "replace":
@@ -131,7 +147,13 @@ class TaskMethodInjector(object):
                     else:
                         # TODO: Merge nested dicts
                         print("lookup nested indices")
-                fun = prev_method(*args2, **kwargs2)
+                # TODO: Added ability to replace method, find a better way to do this
+                if skip_args and skip_kwargs and returns_value:
+                    fun = return_value
+                elif skip_args and skip_kwargs:
+                    fun = None
+                else:
+                    fun = prev_method(*args2, **kwargs2)
                 return fun
 
             rsetattr(self_obj, attr_path_to_method, temp_wrapped_method)
