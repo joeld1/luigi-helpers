@@ -30,6 +30,60 @@ def create_container(self_obj, *args0, **kwargs0):
     return wrapped_client_method
 
 
+def build_image_from_dockerfile(self_obj, *args0, **kwargs0):
+    """
+    path (str) – Path to the directory containing the Dockerfile
+    fileobj – A file object to use as the Dockerfile. (Or a file-like object)
+    tag (str) – A tag to add to the final image
+    quiet (bool) – Whether to return the status
+    nocache (bool) – Don’t use the cache when set to True
+
+    rm (bool) – Remove intermediate containers. The docker build command now defaults to --rm=true, but we have kept
+    the old default of False to preserve backward compatibility
+
+    timeout (int) – HTTP timeout
+    custom_context (bool) – Optional if using fileobj
+    encoding (str) – The encoding for a stream. Set to gzip for compressing
+    pull (bool) – Downloads any updates to the FROM image in Dockerfiles
+    forcerm (bool) – Always remove intermediate containers, even after unsuccessful builds
+    dockerfile (str) – path within the build context to the Dockerfile
+    buildargs (dict) – A dictionary of build arguments
+    container_limits (dict) –
+    A dictionary of limits applied to each container created by the build process. Valid keys:
+
+    memory (int): set memory limit for build
+    memswap (int): Total memory (memory + swap), -1 to disable
+    swap
+    cpushares (int): CPU shares (relative weight)
+    cpusetcpus (str): CPUs in which to allow execution, e.g., "0-3", "0,1"
+    decode (bool) – If set to True, the returned stream will be decoded into dicts on the fly. Default False
+    shmsize (int) – Size of /dev/shm in bytes. The size must be greater than 0. If omitted the system uses 64MB
+    labels (dict) – A dictionary of labels to set on the image
+    cache_from (list) – A list of images used for build cache resolution
+    target (str) – Name of the build-stage to build in a multi-stage Dockerfile
+    network_mode (str) – networking mode for the run commands during build
+    squash (bool) – Squash the resulting images layers into a single layer.
+    extra_hosts (dict) – Extra hosts to add to /etc/hosts in building containers, as a mapping of hostname to IP address.
+    platform (str) – Platform in the format os[/arch[/variant]]
+    isolation (str) – Isolation technology used during build. Default: None.
+
+    use_config_proxy (bool) – If True, and if the docker client configuration file (~/.docker/config.json by default)
+    contains a proxy configuration, the corresponding environment variables will be set in the container being built.
+
+    :param self_obj:
+    :param args0:
+    :param kwargs0:
+    :return:
+    """
+    client_method = getattr(self_obj._client, "build")
+
+    @wraps(client_method)
+    def wrapped_client_method(*args, **kwargs):
+        return client_method(*args0, **kwargs0)
+
+    return wrapped_client_method
+
+
 class PruneContainers(luigi.ExternalTask, DockerTask):
     filters = luigi.DictParameter(default=None)
     is_complete = luigi.BoolParameter(default=False)
